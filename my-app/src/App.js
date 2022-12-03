@@ -3,7 +3,7 @@ import './style/App.css';
 
 import { ethers } from 'ethers';
 import contractAbi from './artifacts/contracts/MyNFT.sol/MyNFT.json'
-const CONTRACT_ADDRESS = "0x3e2C29b1fA13dBE8a1df537096Ee9B4cd236B5f5";
+const CONTRACT_ADDRESS = "0xC5Cd55f2306efe632fd3715709a61b39DE5A0B86";
 let OPENSEA_LINK = '';
 function App() {
 
@@ -59,6 +59,7 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const EpicNFTContract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
+   
     const tranasction_callmakeAnEpicNFT = await EpicNFTContract.setNFTAttribute(name,symbol,imageUri,maxsupply,curator_fee);
     console.log("Going to pop wallet now ti pay to gas");
     await tranasction_callmakeAnEpicNFT.wait();
@@ -70,8 +71,12 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
    
     const EpicNFTContract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, provider);
-    console.log("max supply",await EpicNFTContract.maxSupply());
-    console.log("Fee ",await EpicNFTContract.curator_fee());
+    const max_suply=await EpicNFTContract.maxSupply();
+    console.log("Max_Supply:",max_suply.toString());
+    const fee = await EpicNFTContract.curator_fee();
+    console.log("Fee:",fee.toString());
+    const imageUri = await EpicNFTContract.imageUri();
+    console.log("Imaage Uri :",imageUri);
   }
 
   async function mintNFT() {
@@ -80,13 +85,13 @@ function App() {
     const signer = provider.getSigner();
     const EpicNFTContract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
     const tranasction_mintCharacterNFT = await EpicNFTContract.mintCharacterNFT({ value: ethers.utils.parseEther(curator_fee) });
-    console.log("Minig...please wait")
+    console.log("Minting...please wait")
     await tranasction_mintCharacterNFT.wait();
 
-    console.log(`Mined see the transaction at  https://goerli.etherscan.io/tx/${tranasction_mintCharacterNFT.hash}`)
+    console.log(`Mitned see the transaction at  https://goerli.etherscan.io/tx/${tranasction_mintCharacterNFT.hash}`)
           count += 1;
           setCount(count);
-          OPENSEA_LINK = `https://testnets.opensea.io/assets/goerli/${CONTRACT_ADDRESS}/${Count}`
+          OPENSEA_LINK = `https://testnets.opensea.io/assets/goerli/${CONTRACT_ADDRESS}/${count}`
           console.log(OPENSEA_LINK);
   }
 
@@ -117,7 +122,9 @@ function App() {
           <p className="sub-text">
             Each unique. Each beautiful. Discover your NFT today.
           </p>
+          
           {!currentAccount && renderNotConnectedContainer()}
+          <br/>
           <br/>
           <input
             type="text"

@@ -15,7 +15,7 @@ contract MyNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    string imageUri;
+    string public imageUri;
 
     uint256 public maxSupply;
     uint256 public curator_fee;
@@ -25,7 +25,7 @@ contract MyNFT is ERC721URIStorage {
     constructor() ERC721() {}
 
     ///you cannot mint more than maximium supply
-    error maxlinit();
+    error maxlimit();
 
     ///not having enough ether
     error insufficient_funds();
@@ -33,14 +33,14 @@ contract MyNFT is ERC721URIStorage {
     function setNFTAttribute(
         string memory nftName,
         string memory nftSymbol,
-        string memory nftImageUri,
+        string  memory  nftImageUri,
         uint256  _maxSupply,
         uint256 _fee
     ) external {
         setNameSymbol(nftName, nftSymbol);
         imageUri = nftImageUri;
         maxSupply = _maxSupply;
-        curator_fee = _fee ;
+        curator_fee = _fee * 1 ether;
 
         _tokenIds.increment();
     }
@@ -48,7 +48,7 @@ contract MyNFT is ERC721URIStorage {
     function mintCharacterNFT( ) external payable {
         uint256 newItemId = _tokenIds.current();
         if (maxSupply<newItemId){
-            revert maxlinit();
+            revert maxlimit();
         }
         if(msg.value < curator_fee){
             revert insufficient_funds(); 
@@ -73,7 +73,7 @@ contract MyNFT is ERC721URIStorage {
             abi.encodePacked(
                 '{"name": "',
                 name(),
-                '", "description": "A domain on the Ninja name service", "image": "https://cloudflare-ipfs.com/ipfs/',
+                '", "description": "Natures Wonder", "image": "https://cloudflare-ipfs.com/ipfs/',
                 imageUri,
                 '"}'
             )
